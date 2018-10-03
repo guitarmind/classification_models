@@ -7,6 +7,8 @@ from keras.layers import ZeroPadding2D
 from .params import get_conv_params
 from .params import get_bn_params
 
+from ..se import squeeze_excite_block
+
 
 def handle_block_names(stage, block):
     name_base = 'stage{}_unit{}_'.format(stage + 1, block + 1)
@@ -44,6 +46,9 @@ def basic_identity_block(filters, stage, block):
         x = ZeroPadding2D(padding=(1, 1))(x)
         x = Conv2D(filters, (3, 3), name=conv_name + '2', **conv_params)(x)
 
+        # squeeze and excite block
+        x = squeeze_excite_block(x)
+
         x = Add()([x, input_tensor])
         return x
 
@@ -78,6 +83,9 @@ def basic_conv_block(filters, stage, block, strides=(2, 2)):
         x = Activation('relu', name=relu_name + '2')(x)
         x = ZeroPadding2D(padding=(1, 1))(x)
         x = Conv2D(filters, (3, 3), name=conv_name + '2', **conv_params)(x)
+
+        # squeeze and excite block
+        x = squeeze_excite_block(x)
 
         shortcut = Conv2D(filters, (1, 1), name=sc_name, strides=strides, **conv_params)(shortcut)
         x = Add()([x, shortcut])
@@ -118,6 +126,9 @@ def conv_block(filters, stage, block, strides=(2, 2)):
         x = Activation('relu', name=relu_name + '3')(x)
         x = Conv2D(filters*4, (1, 1), name=conv_name + '3', **conv_params)(x)
 
+        # squeeze and excite block
+        x = squeeze_excite_block(x)
+
         shortcut = Conv2D(filters*4, (1, 1), name=sc_name, strides=strides, **conv_params)(shortcut)
         x = Add()([x, shortcut])
         return x
@@ -154,6 +165,9 @@ def identity_block(filters, stage, block):
         x = BatchNormalization(name=bn_name + '3', **bn_params)(x)
         x = Activation('relu', name=relu_name + '3')(x)
         x = Conv2D(filters*4, (1, 1), name=conv_name + '3', **conv_params)(x)
+
+        # squeeze and excite block
+        x = squeeze_excite_block(x)
 
         x = Add()([x, input_tensor])
         return x
