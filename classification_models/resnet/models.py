@@ -17,14 +17,13 @@ def ResNet18(input_shape, input_tensor=None, weights=None, classes=1000, include
     return model
 
 
-def ResNet34(input_shape, input_tensor=None, weights=None, classes=1000, include_top=True):
+def ResNet34(input_shape, input_tensor=None, weights=None, classes=1000, include_top=True, pretrain_weights=True):
     model = build_resnet(input_tensor=input_tensor,
                          input_shape=input_shape,
                          repetitions=(3, 4, 6, 3),
                          classes=classes,
                          include_top=include_top,
-                         block_type='basic',
-                         pretrain_weights=True)
+                         block_type='basic')
     model.name = 'resnet34'
 
     if weights and pretrain_weights:
