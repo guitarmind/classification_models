@@ -46,8 +46,8 @@ def basic_identity_block(filters, stage, block):
         x = ZeroPadding2D(padding=(1, 1))(x)
         x = Conv2D(filters, (3, 3), name=conv_name + '2', **conv_params)(x)
 
-        # squeeze and excite block
-        x = squeeze_excite_block(x)
+        # scSE block
+        x = csse_block(x)
 
         x = Add()([x, input_tensor])
         return x
@@ -84,8 +84,8 @@ def basic_conv_block(filters, stage, block, strides=(2, 2)):
         x = ZeroPadding2D(padding=(1, 1))(x)
         x = Conv2D(filters, (3, 3), name=conv_name + '2', **conv_params)(x)
 
-        # squeeze and excite block
-        x = squeeze_excite_block(x)
+        # scSE block
+        x = csse_block(x)
 
         shortcut = Conv2D(filters, (1, 1), name=sc_name, strides=strides, **conv_params)(shortcut)
         x = Add()([x, shortcut])
@@ -126,8 +126,8 @@ def conv_block(filters, stage, block, strides=(2, 2)):
         x = Activation('relu', name=relu_name + '3')(x)
         x = Conv2D(filters*4, (1, 1), name=conv_name + '3', **conv_params)(x)
 
-        # squeeze and excite block
-        x = squeeze_excite_block(x)
+        # scSE block
+        x = csse_block(x)
 
         shortcut = Conv2D(filters*4, (1, 1), name=sc_name, strides=strides, **conv_params)(shortcut)
         x = Add()([x, shortcut])
@@ -166,8 +166,8 @@ def identity_block(filters, stage, block):
         x = Activation('relu', name=relu_name + '3')(x)
         x = Conv2D(filters*4, (1, 1), name=conv_name + '3', **conv_params)(x)
 
-        # squeeze and excite block
-        x = squeeze_excite_block(x)
+        # scSE block
+        x = csse_block(x)
 
         x = Add()([x, input_tensor])
         return x

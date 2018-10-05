@@ -23,10 +23,11 @@ def ResNet34(input_shape, input_tensor=None, weights=None, classes=1000, include
                          repetitions=(3, 4, 6, 3),
                          classes=classes,
                          include_top=include_top,
-                         block_type='basic')
+                         block_type='basic',
+                         pretrain_weights=True)
     model.name = 'resnet34'
 
-    if weights:
+    if weights and pretrain_weights:
         load_model_weights(weights_collection, model, weights, classes, include_top)
     return model
 

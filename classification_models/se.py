@@ -31,3 +31,42 @@ def squeeze_excite_block(input, ratio=16):
 
     x = multiply([init, se])
     return x
+
+
+"""
+
+Spatial and Channel Squeeze & Excitation Block (scSE)
+https://www.kaggle.com/c/tgs-salt-identification-challenge/discussion/66568
+
+"""
+from keras.layers.core import Lambda, Dense
+from keras.layers.convolutional import Conv2D
+from keras.layers.merge import Add, Multiply
+
+def cse_block(prevlayer):
+    mean = Lambda(lambda xin: K.mean(xin, axis=[1, 2]))(prevlayer)
+    lin1 = Dense(K.int_shape(prevlayer)[3]//2, activation='relu')(mean)
+    lin2 = Dense(K.int_shape(prevlayer)[3], activation='sigmoid')(lin1)
+    x = Multiply()([prevlayer, lin2])
+    return x
+
+def sse_block(prevlayer):
+    conv = Conv2D(K.int_shape(prevlayer)[3],
+                  (1, 1),
+                  padding="same",
+                  kernel_initializer="he_normal",
+                  activation='sigmoid',
+                  strides=(1, 1))(prevlayer)
+    conv = Multiply()([prevlayer, conv])
+    return conv
+
+def csse_block(x):
+    '''
+    Implementation of Concurrent Spatial and Channel ‘Squeeze & Excitation’ in Fully Convolutional Networks
+    https://arxiv.org/abs/1803.02579
+    '''
+    cse = cse_block(x)
+    sse = sse_block(x)
+    x = Add()([cse, sse])
+    
+    return x
