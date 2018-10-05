@@ -45,8 +45,8 @@ from keras.layers.merge import Add, Multiply
 
 def cse_block(prevlayer):
     mean = Lambda(lambda xin: K.mean(xin, axis=[1, 2]))(prevlayer)
-    lin1 = Dense(K.int_shape(prevlayer)[3]//2, activation='relu')(mean)
-    lin2 = Dense(K.int_shape(prevlayer)[3], activation='sigmoid')(lin1)
+    lin1 = Dense(K.int_shape(prevlayer)[3]//2, activation='relu', kernel_initializer='he_normal', use_bias=False)(mean)
+    lin2 = Dense(K.int_shape(prevlayer)[3], activation='sigmoid', kernel_initializer='he_normal', use_bias=False)(lin1)
     x = Multiply()([prevlayer, lin2])
     return x
 
@@ -56,7 +56,8 @@ def sse_block(prevlayer):
                   padding="same",
                   kernel_initializer="he_normal",
                   activation='sigmoid',
-                  strides=(1, 1))(prevlayer)
+                  strides=(1, 1),
+                  use_bias=False)(prevlayer)
     conv = Multiply()([prevlayer, conv])
     return conv
 
