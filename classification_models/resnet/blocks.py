@@ -7,7 +7,7 @@ from keras.layers import ZeroPadding2D
 from .params import get_conv_params
 from .params import get_bn_params
 
-from ..se import squeeze_excite_block
+from ..se import csse_block
 
 
 def handle_block_names(stage, block):
